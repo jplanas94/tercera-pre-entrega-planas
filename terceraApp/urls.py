@@ -7,8 +7,8 @@ urlpatterns = [
     #path('saludo/', saludo),
     #path('segundavista/', segundavista),
     path('probandotemplate/', probandotemplate),
-    path('', inicio),
-    path('actores/', actores),
-    path('directores/', directores),
-    path('peliculas/', peliculas),
+    path('', inicio, name='inicio'),
+    path('actores/', actores, name='actores'),
+    path('directores/', directores, name='directores'),
+    path('peliculas/', peliculas, name='peliculas'),
 ]
