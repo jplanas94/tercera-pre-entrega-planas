@@ -1,5 +1,5 @@
-from django.shortcuts import render,redirect
-from django.http import HttpResponse
+from django.shortcuts import render
+
 
 
 from terceraApp.models import *
@@ -11,16 +11,7 @@ def inicio (request):
     return render(request,'terceraApp/inicio.html')
 
 def peliculas (request):
-    return render(request,'terceraApp/peliculas.html')
-   
-
-def actores (request):
-    return render(request,'terceraApp/actores.html')
-
-def directores (request):
-    return render(request,'terceraApp/directores.html')   
-
-def peliculas_formulario(request):
+    mis_peliculas=pelicula.objects.all()
 
     if request.method == 'POST':
         mi_formulario = PeliculaFormulario(request.POST)
@@ -29,26 +20,17 @@ def peliculas_formulario(request):
             informacion = mi_formulario.cleaned_data
             peli= pelicula(nombre=informacion['nombre'], anio=informacion['anio'], oscar=informacion['oscar'])
             peli.save()
-            return redirect('inicio')
+            nueva_peli = {'nombre': informacion['nombre'], 'FechaDeEstreno':informacion['anio'], 'Oscar':informacion['oscar']}
+            return render (request, 'terceraApp/peliculas.html',{'peliculaformulario': mi_formulario,'nueva_peli':nueva_peli,"mis_pelis":mis_peliculas })
     else:
-        miformulario=DirectoresFormulario()
-    return render(request, 'terceraApp/peliculas-formulario.html',{'peliculaformulario':miformulario})
+        mi_formulario=PeliculaFormulario()
 
-def directores_formulario(request):
+    return render(request,'terceraApp/peliculas.html', {'peliculaformulario':mi_formulario,'mis_pelis':mis_peliculas})
+   
 
-    if request.method == 'POST':
-        mi_formulario = DirectoresFormulario(request.POST)
+def actores (request):
+    mis_actores=actor.objects.all()
 
-        if mi_formulario.is_valid():
-            informacion = mi_formulario.cleaned_data
-            direc= director(nombre=informacion['nombre'], obras=informacion['obra'], oscar=informacion['oscar'])
-            direc.save()
-            return redirect('inicio')
-    else:
-        miformulario=DirectoresFormulario()
-    return render(request, 'terceraApp/directores-formulario.html',{'directoresformulario':miformulario})
-
-def actores_formulario(request):
 
     if request.method == 'POST':
         mi_formulario = ActoresFormulario(request.POST)
@@ -57,11 +39,40 @@ def actores_formulario(request):
             informacion = mi_formulario.cleaned_data
             act= actor(nombre=informacion['nombre'], edad=informacion['edad'], oscar=informacion['oscar'])
             act.save()
-            return redirect('inicio')
+            nuevo_actor={'nombre': informacion['nombre'], 'edad':informacion['edad'], 'Oscar':informacion['oscar']}
+            return render (request, 'terceraApp/actores.html',{'actoresformulario': mi_formulario,'nuevo_actor':nuevo_actor,"mis_actores":mis_actores })
     else:
-        miformulario=ActoresFormulario()
-    return render(request, 'terceraApp/actores-formulario.html', {'actoresformulario':miformulario})
+        mi_formulario=ActoresFormulario()
+    return render(request, 'terceraApp/actores.html', {'actoresformulario':mi_formulario, 'mis_actores':mis_actores})
 
 
+def directores (request):
+    mis_directores = director.objects.all()
 
+    if request.method == 'POST':
+        mi_formulario = DirectoresFormulario(request.POST)
+
+        if mi_formulario.is_valid():
+            informacion = mi_formulario.cleaned_data
+            direc= director(nombre=informacion['nombre'], obras=informacion['obra'], oscar=informacion['oscar'])
+            direc.save()
+            nuevo_director={'nombre': informacion['nombre'], 'obras':informacion['obra'], 'Oscar':informacion['oscar']}
+            return render (request, 'terceraApp/directores.html',{'directoresformulario': mi_formulario,'nuevo_director':nuevo_director,"mis_directores":mis_directores })
+    else:
+        mi_formulario=DirectoresFormulario()
+    return render(request, 'terceraApp/directores.html',{'directoresformulario':mi_formulario, 'mis_directores':mis_directores})
+      
+
+def busqueda_pelicula(request):
+    return render(request, 'terceraApp/inicio.html')
+
+def buscar(request):
+    if request.GET["fechadeestreno"]:
+        FdE= request.GET["fechadeestreno"]
+        resultado=pelicula.objects.filter(anio__icontains = FdE)
+
+        return render (request, 'terceraApp/inicio.html',{'Peliculas':resultado, 'Fechadeestreno':FdE})
+    else:
+        respuesta='no se encontraron estrenos ese año'
+    return render(request, 'terceraApp/inicio.html',{'respuesta':respuesta})
 

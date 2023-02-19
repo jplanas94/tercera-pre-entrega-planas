@@ -8,7 +8,27 @@
     <div class="container">
         <div class="row">
             <div class= "col-lg-12"> 
-                <h1>Bienvenido a Infocine</h1>
+                <h1>Busque peliculas por fecha de estreno</h1>
+
+                
+                <p>Estamos buscando estrenos en {{ Fechadeestreno }}</p>
+                {% if Peliculas %}
+                <ul>
+                    {% for pelicula in Peliculas%}
+                    <li>{{ pelicula.nombre }} ({{ pelicula.anio }}) {{ pelicula.oscar }}</li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p>No hay peliculas registradas en {{Fechadeestreno}}</p>
+                {% endif %}
+
+                <form action="{%url 'buscar'%}" method="GET">
+                    {% csrf_token %}
+                        <input type="number" name="fechadeestreno" id="fechadeestreno">
+                        <input type="submit" value="Buscar">    
+                    
+                    
+                    </form>
                 
             </div>
         </div>
